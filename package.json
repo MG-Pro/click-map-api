@@ -1,0 +1,25 @@
+{
+  "name": "click-map-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo null"
+  },
+  "author": "Gladkikh Mikhail",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "engines": {
+    "node": ">=10",
+    "pnpm": ">=5"
+  }
+}
