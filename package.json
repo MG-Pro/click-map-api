@@ -1,8 +1,9 @@
 {
   "name": "click-map-api",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "repository": "https://github.com/MG-Pro/click-map-api",
   "scripts": {
     "test": "echo null"
   },
