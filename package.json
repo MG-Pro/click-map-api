@@ -5,7 +5,8 @@
   "main": "index.js",
   "repository": "https://github.com/MG-Pro/click-map-api",
   "scripts": {
-    "test": "echo null"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": "Gladkikh Mikhail",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "express": "^4.17.1",
     "mysql": "^2.18.1"
   },
+  "type": "module",
   "engines": {
     "node": ">=10",
     "pnpm": ">=5"
