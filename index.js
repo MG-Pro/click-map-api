@@ -1,5 +1,5 @@
 import express from 'express'
-import connection from './db'
+import activities from './routes/activities.js'
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -13,7 +13,8 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use('/api/activities', activities)
+
 app.listen(port, () => {
-  console.log(`Server start on port ${port}!`)
-  connection.connect()
+  console.log(`Server start on port http://localhost:${port}`)
 })

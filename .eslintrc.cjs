@@ -19,5 +19,6 @@ module.exports = {
     'prefer-template': 'off',
     'consistent-return': 'off',
     'object-curly-spacing': ['error', 'never'],
+    'import/extensions': ['error', 'always'],
   },
 }
