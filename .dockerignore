@@ -1,0 +1,9 @@
+node_modules/
+.gitignore
+Dockerfile
+License
+test/
+e2e/
+.git
+.idea
+README.md
