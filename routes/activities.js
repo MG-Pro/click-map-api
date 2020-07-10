@@ -4,7 +4,7 @@ import pool from '../db/index.js'
 const router = express.Router()
 
 router.get('/', (req, res) => {
-  pool.query('SELECT * FROM activities')
+  pool.query('SELECT * FROM test')
     .then((result) => res.json(result[0]))
 })
 
