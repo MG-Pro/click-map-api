@@ -13,7 +13,7 @@ jobs:
       - name: build-push
         uses: docker/build-push-action@v1
         with:
-          username: ${{ DOCKER_USER }}
-          password: ${{ DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           repository: mgcat/click-map-api
           tag: ${{ outputs.build.tags }}
