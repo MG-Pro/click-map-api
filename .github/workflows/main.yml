@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: build-push
         uses: docker/build-push-action@v1
         with:
