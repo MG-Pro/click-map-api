@@ -16,4 +16,4 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: mgcat/click-map-api
-          tag: tags
+          tag: path
