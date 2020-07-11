@@ -19,6 +19,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: mgcat/click-map-api
           tags: latest
-          build_args: DB_SETTINGS=${{ secrets.DB }}
+          build_args: DB_CONFIG=${{ secrets.DB }}
         env:
           DB_SETTINGS: ${{ secrets.DB }}

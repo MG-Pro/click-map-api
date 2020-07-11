@@ -1,8 +1,8 @@
 FROM node
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
-ENV DB_SETTINGS=DB_SETTINGS
-RUN 'echo $DB_SETTINGS'
+ENV DB_SETTINGS=DB_CONFIG
+RUN 'echo $DB_CONFIG'
 WORKDIR /home/mg/www/cm-api.chinamakes.ru
 COPY . .
 RUN node -v
