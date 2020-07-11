@@ -1,20 +1,23 @@
-name: click-map-api CI/CD
+name: click-map-api CD
 
 on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   cd:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: znck/pnpm@v0.1.0-alpha.1
+      - name: actions/checkout
+        uses: actions/checkout@v2.0.0
+      - name: actions/setup-node
+        uses: actions/setup-node@v1.4.1
+        with:
+          node-version: "14.5.0"
+      - name: npm install
+        uses: jaid/action-npm-install@v1.2.1
       - name: Docker login
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Build
