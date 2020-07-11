@@ -1,9 +1,10 @@
 import express from 'express'
-// import activities from './routes/activities.js'
+import activities from './routes/activities.js'
+import db from './db/index.js'
 
 const app = express()
 const port = process.env.PORT || 3000
-console.log(process.env.DB_SETTINGS)
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
@@ -13,8 +14,11 @@ app.use((req, res, next) => {
   next()
 })
 
-// app.use('/api/activities', activities)
+app.use('/api/activities', activities)
 
 app.listen(port, () => {
   console.log(`Server start on port http://localhost:${port}`)
+  if (db.error) {
+    console.error('DB connection error!')
+  }
 })

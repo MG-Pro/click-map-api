@@ -1,20 +1,39 @@
 import mysql from 'mysql2/promise.js'
-import config from '../config.js'
+import * as fs from 'fs'
+import * as path from 'path'
 
-console.log(config.dbSettings)
-const {
-  host,
-  user,
-  database,
-  password,
-} = config.dbSettings
+const configPath = path.join('.', './config.json')
+let config = null
 
-const pool = mysql.createPool({
-  connectionLimit: 5,
-  host,
-  user,
-  database,
-  password,
-})
+if (fs.existsSync(configPath)) {
+  try {
+    config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  } catch (e) {
+    console.log('Error DB Config')
+  }
+}
 
-export default pool
+if (!config) {
+  const {DB_HOST, DB_USER, DB_NAME, DB_PASS} = process.env
+  
+  if (DB_HOST && DB_USER && DB_NAME && DB_PASS) {
+    config = {
+      host: DB_HOST,
+      user: DB_USER,
+      database: DB_NAME,
+      password: DB_PASS,
+    }
+  }
+}
+console.log(config)
+const db = {error: true}
+
+if (config) {
+  db.pool = mysql.createPool({
+    connectionLimit: 5,
+    ...config,
+  })
+  db.error = false
+}
+
+export default db
