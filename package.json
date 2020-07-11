@@ -6,7 +6,7 @@
   "repository": "https://github.com/MG-Pro/click-map-api",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node -v && node index.js"
   },
   "author": "Mikhail Gladkikh",
   "license": "ISC",
