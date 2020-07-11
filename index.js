@@ -1,7 +1,9 @@
+console.log(process.env)
+
 import express from 'express'
 import activities from './routes/activities.js'
 
-console.log(process.env)
+
 const app = express()
 const port = process.env.PORT || 3000
 
