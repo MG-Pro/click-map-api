@@ -12,7 +12,8 @@ ENV DB_USER=$DB_USER
 ENV DB_NAME=$DB_NAME
 ENV DB_PASS=$DB_PASS
 
-WORKDIR /home/mg/www/cm-api.chinamakes.ru
+WORKDIR /usr/src/app
+
 COPY . .
 RUN node -v
 RUN npm install -g pnpm

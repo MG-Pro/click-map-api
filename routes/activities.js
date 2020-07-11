@@ -1,10 +1,10 @@
 import express from 'express'
-import pool from '../db/index.js'
+import db from '../db/index.js'
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-  pool.query('SELECT * FROM test')
+  db.pool.query('SELECT * FROM test')
     .then((result) => res.json(result[0]))
 })
 
