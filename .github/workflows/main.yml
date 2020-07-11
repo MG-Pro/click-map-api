@@ -16,8 +16,6 @@ jobs:
         uses: actions/setup-node@v1.4.1
         with:
           node-version: "14.5.0"
-      - name: install pnpm
-        run: npm install -g pnpm
       - name: Docker login
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Build
