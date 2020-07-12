@@ -25,7 +25,7 @@ if (!config) {
     }
   }
 }
-console.log(config)
+
 const db = {error: true}
 
 if (config) {
