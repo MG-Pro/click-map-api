@@ -19,6 +19,7 @@ module.exports = {
     'prefer-template': 'off',
     'consistent-return': 'off',
     'object-curly-spacing': ['error', 'never'],
+    'no-param-reassign': 'off',
     'import/extensions': ['error', 'always'],
     'object-curly-newline': ['error', {
       ObjectExpression: {multiline: true},

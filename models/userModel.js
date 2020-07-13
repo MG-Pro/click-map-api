@@ -5,24 +5,28 @@ class UserModel {
     this.pool = pool
   }
 
-  async isExist(fingerprint) {
+  async query(query) {
     try {
-      const result = await this.pool
-        .query(`SELECT id FROM users WHERE fingerprint=${fingerprint}`)
-
-      return !!result[0].length
+      const result = await this.pool(query)
+      return result[0]
     } catch (e) {
-      return e
+      return new Error(e)
     }
   }
 
+  async isExist(fingerprint) {
+    const result = await this.getByFingerprint(fingerprint)
+    return result instanceof Error ? false : !!result
+  }
+
+  async getByFingerprint(fingerprint) {
+    return this
+      .query(`SELECT id FROM users WHERE fingerprint=${fingerprint}`)
+  }
+
   async add(fingerprint) {
-    try {
-      await this.pool.query(`INSERT INTO users(fingerprint) VALUES ('${fingerprint}')`)
-      return true
-    } catch (e) {
-      return e
-    }
+    await this.pool.query(`INSERT INTO users(fingerprint) VALUES ('${fingerprint}')`)
+    return this.pool.query('SELECT @@IDENTITY')
   }
 }
 
