@@ -4,19 +4,25 @@ class UserModel {
   constructor(pool) {
     this.pool = pool
   }
-  
+
   async isExist(fingerprint) {
-    const result = await this.pool
-      .query(`SELECT id FROM users WHERE fingerprint=${fingerprint}`)
-   
-    return !!result[0].length
+    try {
+      const result = await this.pool
+        .query(`SELECT id FROM users WHERE fingerprint=${fingerprint}`)
+
+      return !!result[0].length
+    } catch (e) {
+      return e
+    }
   }
-  
+
   async add(fingerprint) {
-    const result = await this.pool
-      .query(`INSERT INTO users(fingerprint) VALUES ('${fingerprint}')`)
-    console.log(result)
-    return true
+    try {
+      await this.pool.query(`INSERT INTO users(fingerprint) VALUES ('${fingerprint}')`)
+      return true
+    } catch (e) {
+      return e
+    }
   }
 }
 
