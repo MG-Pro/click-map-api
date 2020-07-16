@@ -1,20 +1,28 @@
 import express from 'express'
 import userModel from '../models/userModel.js'
+import activityModel from '../models/activityModel.js'
 
 const router = express.Router()
 
 router.post('/add', async (req, res) => {
-  const {fingerprint} = req.body
-
-  if (!fingerprint) {
-    return res.json(null)
+  const response = {
+    success: false,
   }
 
-  if (await userModel.isExist(fingerprint)) {
-    await userModel.add(fingerprint)
+  const {fingerprint, activities} = req.body
+
+  if (!fingerprint || !activities.length) {
+    return res.json(response)
   }
 
-  res.json(null)
+  let user = await userModel.getByFingerprint(fingerprint)
+
+  if (!user) {
+    user = await userModel.add(fingerprint)
+  }
+
+  response.success = !!await activityModel.add(user.id, activities)
+  res.json(response)
 })
 
 export default router

@@ -1,42 +1,30 @@
 import db from '../db/index.js'
+import AbstractModel from './AbstractModel.js'
 
-class ActivityModel {
+class ActivityModel extends AbstractModel {
   constructor(pool) {
+    super()
     this.pool = pool
   }
 
-  async query(query) {
-    try {
-      const result = await this.pool(query)
-      return result[0]
-    } catch (e) {
-      return new Error(e)
-    }
+  async add(userId, activities) {
+    const keys = Object.keys(activities[0]).join(', ')
+    let values = ''
+
+    activities.forEach((item, i, array) => {
+      values += `(${userId}, ${this.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
+    })
+
+    const sql = `INSERT INTO activities (user_id, ${keys}) VALUES ${values}`
+    console.log(sql)
+    return this.interceptor(await this.query(sql))
   }
 
-  async add(activities) {
-    const entities = [
-      'screen_width',
-      'click_x',
-      'click_y',
-      'scroll_x',
-      'scroll_y',
-      'orientation',
-      'elem_tag',
-      'elem_selector',
-      'user_id',
-      'elem_x',
-      'elem_y',
-      'page_uri',
-    ].join(', ')
-
-    console.log(activities, entities)
-
-    // await this.query(`INSERT INTO activities (${entities}) VALUES ('${activities}')`)
-    return true
+  normalizeValues(values) {
+    return Object.values(values)
+      .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))
+      .join(', ')
   }
 }
 
-const activityModel = new ActivityModel(db.pool)
-
-export default activityModel
+export default new ActivityModel(db.pool)

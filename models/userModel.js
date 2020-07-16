@@ -1,35 +1,22 @@
 import db from '../db/index.js'
+import AbstractModel from './AbstractModel.js'
 
-class UserModel {
+class UserModel extends AbstractModel {
   constructor(pool) {
+    super()
     this.pool = pool
   }
 
-  async query(query) {
-    try {
-      const result = await this.pool(query)
-      return result[0]
-    } catch (e) {
-      return new Error(e)
-    }
-  }
-
-  async isExist(fingerprint) {
-    const result = await this.getByFingerprint(fingerprint)
-    return result instanceof Error ? false : !!result
-  }
-
   async getByFingerprint(fingerprint) {
-    return this
-      .query(`SELECT id FROM users WHERE fingerprint=${fingerprint}`)
+    const sql = `SELECT * FROM users WHERE fingerprint="${fingerprint}"`
+    return this.interceptor(await this.query(sql))[0]
   }
 
   async add(fingerprint) {
-    await this.pool.query(`INSERT INTO users(fingerprint) VALUES ('${fingerprint}')`)
-    return this.pool.query('SELECT @@IDENTITY')
+    const sql = `INSERT INTO users(fingerprint) VALUES ("${fingerprint}")`
+    await this.query(sql)
+    return this.interceptor(await this.query('SELECT @@IDENTITY'))
   }
 }
 
-const userModel = new UserModel(db.pool)
-
-export default userModel
+export default new UserModel(db.pool)
