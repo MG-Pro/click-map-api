@@ -23,5 +23,8 @@ module.exports = {
     'import/extensions': ['error', 'always'],
     'object-curly-newline': 'off',
     'no-trailing-spaces': ['error', {skipBlankLines: true}],
+    'no-return-await': 'off',
+    'no-await-in-loop': 'off',
+    'no-restricted-syntax': 'off',
   },
 }

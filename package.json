@@ -9,7 +9,7 @@
     "start": "node -v && node index.js"
   },
   "author": "Mikhail Gladkikh",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
