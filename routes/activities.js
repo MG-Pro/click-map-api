@@ -15,9 +15,9 @@ router.post('/add', async (req, res) => {
     return acc
   })
 
-  const {fingerprint, activities, apiSec} = data
+  const {fingerprint, activities, basicToken} = data
 
-  if (apiSec !== sec || !fingerprint || !activities.length) {
+  if (basicToken !== sec || !fingerprint || !activities.length) {
     return res.json(response)
   }
 
