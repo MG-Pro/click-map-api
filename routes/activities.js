@@ -3,15 +3,21 @@ import userModel from '../models/userModel.js'
 import activityModel from '../models/activityModel.js'
 
 const router = express.Router()
+const sec = 'CE68C8072A0A71863350CFB1BED8349CAD41672E'
 
 router.post('/add', async (req, res) => {
   const response = {
     success: false,
   }
 
-  const {fingerprint, activities} = req.body
+  const data = req.body.data.split('').reduce((acc, sym) => {
+    acc += String.fromCharCode(sym.charCodeAt(0) ^ 123)
+    return acc
+  })
 
-  if (!fingerprint || !activities.length) {
+  const {fingerprint, activities, apiSec} = data
+
+  if (apiSec !== sec || !fingerprint || !activities.length) {
     return res.json(response)
   }
 

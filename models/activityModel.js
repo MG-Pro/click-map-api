@@ -8,25 +8,43 @@ class ActivityModel extends AbstractModel {
   }
 
   async add(userId, activities) {
+    const preparedActivitiesData = activities.map((item) => {
+      const {
+        click_x,
+        click_y,
+        screen_width,
+        orientation,
+        scroll_x,
+        scroll_y,
+        page_uri,
+        timestamp,
+      } = item
+
+      return {
+        orientation_id: this.getOrientationId(orientation),
+        screen_width,
+        click_x,
+        click_y,
+        scroll_x,
+        scroll_y,
+        page_uri,
+        timestamp,
+      }
+    })
+    const keys = Object.keys(preparedActivitiesData[0]).join(', ')
     const {nearestElemsData, targetElemData} = activities[0]
-    
-    const values = activities.reduce((acc, item, i, array) => {
-      delete item.nearestElemsData
-      delete item.targetElemData
-      item.orientation_id = this.getOrientationId(item.orientation)
-      delete item.orientation
-      
-      acc += `(${userId}, ${this.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
-      return acc
-    }, '')
-    
-    const keys = Object.keys(activities[0]).join(', ')
-    
-    const sql = `INSERT INTO activities (user_id, ${keys}) VALUES ${values}`
-    console.log(sql)
-    this.interceptor(await this.query(sql))
-    const id = this.interceptor(await this.query('SELECT @@IDENTITY'))
-    await this.addElems(id, targetElemData, nearestElemsData)
+
+    let index = 0
+    for (const item of preparedActivitiesData) {
+      const value = `(${userId}, ${this.normalizeValues(item)})${index + 1 === preparedActivitiesData.length ? '' : ', '}`
+      const sql = `INSERT INTO activities (user_id, ${keys}) VALUES ${value}`
+      await this.query(sql)
+      const id = await this.getLastId()
+      await this.addElems(id, targetElemData, nearestElemsData)
+      index++
+    }
+
+    return true
   }
 
   async addElems(activityId, target, nearest) {
@@ -42,15 +60,21 @@ class ActivityModel extends AbstractModel {
         height: item.height,
         tag_id: await this.getTagId(tags, item.elemTag),
         activity_id: activityId,
-        target: item.target,
+        target: item.target || 0,
       }
       elems.push(data)
     }
-   
-    
-    console.log(elems)
+    const keys = Object.keys(elems[0]).join(', ')
+
+    const values = elems.reduce((acc, item, i, array) => {
+      acc += `(${this.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
+      return acc
+    }, '')
+
+    const selectSql = `INSERT INTO elements (${keys}) VALUES ${values}`
+    await this.query(selectSql)
   }
-  
+
   getOrientationId(orientation) {
     const orientations = {
       'landscape-primary': 1,
@@ -58,25 +82,23 @@ class ActivityModel extends AbstractModel {
     }
     return orientations[orientation]
   }
-  
+
   async getTags() {
     const selectSql = 'SELECT * FROM elem_tags'
-    const tags = this.interceptor(await this.query(selectSql))
-    console.log(tags)
-    return {}
+    return await this.query(selectSql)
   }
-  
+
   async getTagId(tags, tagName) {
-    const tag = tags[tagName]
-    return tag || await this.addTagName(tagName)
+    const tag = tags.find(({name}) => name === tagName)
+    return tag ? tag.id : await this.addTagName(tagName)
   }
-  
+
   async addTagName(tagName) {
     const insertSql = `INSERT INTO elem_tags(name) VALUES ("${tagName}")`
     await this.query(insertSql)
-    return this.interceptor(await this.query('SELECT @@IDENTITY'))
+    return this.getLastId()
   }
-  
+
   normalizeValues(values) {
     return Object.values(values)
       .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))

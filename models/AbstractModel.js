@@ -5,16 +5,17 @@ class AbstractModel {
       return result[0]
     } catch (e) {
       this.logError(e)
-      return new Error(e)
+      throw new Error(e)
     }
-  }
-
-  interceptor(result) {
-    return result instanceof Error ? false : result
   }
 
   logError(error) {
     console.log(error)
+  }
+
+  async getLastId() {
+    const result = await this.query('SELECT @@IDENTITY')
+    return result[0]['@@IDENTITY']
   }
 }
 
