@@ -6,6 +6,7 @@ import db from './db/index.js'
 
 const app = express()
 const port = process.env.PORT || 3000
+const host = '127.0.0.1'
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -22,7 +23,7 @@ app.use(bodyParser.json())
 app.use('/api/activities', activities)
 app.use('/', statics)
 
-app.listen(port, () => {
+app.listen({port, host}, () => {
   console.log(`Server start on port http://localhost:${port}`)
   if (db.error) {
     console.error('DB connection error!')
