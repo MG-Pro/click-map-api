@@ -23,7 +23,7 @@ app.use(bodyParser.json())
 app.use('/api/activities', activities)
 app.use('/', statics)
 
-app.listen({port, host}, () => {
+app.listen(port, () => {
   console.log(`Server start on port http://localhost:${port}`)
   if (db.error) {
     console.error('DB connection error!')
