@@ -5,7 +5,6 @@ class AbstractModel {
       return result[0]
     } catch (e) {
       this.logError(e)
-      throw new Error(e)
     }
   }
 
