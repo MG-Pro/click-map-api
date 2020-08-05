@@ -5,9 +5,13 @@ import activityModel from '../models/activityModel.js'
 const router = express.Router()
 const sec = 'CE68C8072A0A71863350CFB1BED8349CAD41672E'
 
+const response = {
+  success: false,
+}
+
 router.post('/add', async (req, res) => {
-  const response = {
-    success: false,
+  if (!req.body.data) {
+    return res.json(response)
   }
 
   const data = req.body.data.split('').reduce((acc, sym) => {
@@ -15,7 +19,7 @@ router.post('/add', async (req, res) => {
     return acc
   })
 
-  const {fingerprint, activities, basicToken} = data
+  const {fingerprint, activities, basicToken} = data || {}
 
   if (basicToken !== sec || !fingerprint || !activities.length) {
     return res.json(response)
