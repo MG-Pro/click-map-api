@@ -3,7 +3,7 @@ import http from 'http'
 const options = {
   timeout: 2000,
   host: '127.0.0.1',
-  port: process.env.PORT || 3000,
+  port: 3000,
 }
 
 const request = http.request(options, (res) => {
