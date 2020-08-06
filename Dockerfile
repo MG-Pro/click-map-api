@@ -1,6 +1,6 @@
-FROM node
+FROM node:alpine
 
-ARG NODE_ENV=development
+ARG NODE_ENV=production
 ARG DB_HOST
 ARG DB_USER
 ARG DB_NAME
