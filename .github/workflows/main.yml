@@ -7,7 +7,7 @@ on:
 
 jobs:
   cd:
-    runs-on: ubuntu-18.04
+    runs-on: node:alpine
 
     steps:
       - name: Checkout
