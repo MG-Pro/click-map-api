@@ -26,5 +26,6 @@ app.listen(port, () => {
   console.log(`Server start on port http://localhost:${port}`)
   if (db.error) {
     console.error('DB connection error!')
+    process.exit(1)
   }
 })

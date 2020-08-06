@@ -19,4 +19,8 @@ RUN node -v
 RUN npm install -g pnpm
 RUN pnpm install
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s \
+    CMD node healthcheck.js
+
 CMD ["pnpm", "start"]
