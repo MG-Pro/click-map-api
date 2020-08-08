@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import activities from './routes/activities.js'
 import statics from './routes/static.js'
 import db from './db/index.js'
+import errorHandler from './middlewares/errorHandler.js'
 
 const app = express()
 const port = 3000
@@ -21,6 +22,7 @@ app.use(bodyParser.json())
 
 app.use('/api/activities', activities)
 app.use('/', statics)
+app.use(errorHandler)
 
 app.listen(port, () => {
   console.log(`Server start on port ${port}`)

@@ -1,4 +1,5 @@
 import express from 'express'
+import asyncHandler from 'express-async-handler'
 import userModel from '../models/userModel.js'
 import activityModel from '../models/activityModel.js'
 import dataModel from '../models/dataModel.js'
@@ -6,29 +7,39 @@ import dataModel from '../models/dataModel.js'
 const router = express.Router()
 const sec = 'CE68C8072A0A71863350CFB1BED8349CAD41672E'
 
-const response = {
-  success: false,
-}
-
-router.post('/add', async (req, res) => {
+router.post('/add', asyncHandler(async (req, res) => {
   if (!req.body.data) {
-    return res.json(response)
+    throw new Error('There isn`t data field in request')
   }
 
   const {fingerprint, activities, basicToken} = dataModel.encodeData(req.body.data)
 
-  if (basicToken !== sec || !fingerprint || !activities.length) {
-    return res.json(response)
+  if (basicToken !== sec) {
+    throw new Error('Basic token not valid')
+  }
+
+  if (!fingerprint) {
+    throw new Error('There isn`t fingerprint field in request')
+  }
+
+  if (!activities.length) {
+    throw new Error('There isn`t any activities in request')
   }
 
   let user = await userModel.getByFingerprint(fingerprint)
 
   if (!user) {
-    user = await userModel.add(fingerprint)
+    const userId = await userModel.add(fingerprint)
+    user = {id: userId}
   }
 
-  response.success = !!await activityModel.add(user.id, activities)
-  res.json(response)
-})
+  const result = !!await activityModel.add(user.id, activities)
+
+  if (result) {
+    res.json({success: true})
+  } else {
+    throw new Error('Activities was not save')
+  }
+}))
 
 export default router

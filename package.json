@@ -5,21 +5,23 @@
   "main": "index.js",
   "repository": "https://github.com/MG-Pro/click-map-api",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "node -v && node index.js"
   },
   "author": "Mikhail Gladkikh",
   "license": "MIT",
   "devDependencies": {
+    "cross-env": "^7.0.2",
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "body-parser": "1.19.0",
     "express": "^4.17.1",
-    "mysql2": "2.1.0",
-    "body-parser": "1.19.0"
+    "express-async-handler": "^1.1.4",
+    "mysql2": "2.1.0"
   },
   "type": "module",
   "engines": {

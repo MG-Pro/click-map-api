@@ -31,6 +31,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-plusplus': 'off',
     'no-bitwise': 'off',
+    'no-throw-literal': 'off',
     camelcase: ['error', {
       properties: 'never',
       ignoreDestructuring: true,

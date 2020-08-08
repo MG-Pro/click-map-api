@@ -8,10 +8,9 @@ class DataModel extends AbstractModel {
         acc += String.fromCharCode(sym.charCodeAt(0) ^ 123)
         return acc
       })
-
       return JSON.parse(decodedData || {})
     } catch (e) {
-      this.logError(e)
+      throw {type: 'APP', error: new Error('Error encode data')}
     }
   }
 }
