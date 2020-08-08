@@ -2,11 +2,6 @@ import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 
 class ActivityModel extends AbstractModel {
-  constructor(pool) {
-    super()
-    this.pool = pool
-  }
-
   async add(userId, activities) {
     const preparedActivitiesData = activities.map((item) => {
       const {

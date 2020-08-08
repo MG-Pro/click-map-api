@@ -5,6 +5,7 @@ import statics from './routes/static.js'
 import db from './db/index.js'
 
 const app = express()
+const port = 3000
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -21,8 +22,8 @@ app.use(bodyParser.json())
 app.use('/api/activities', activities)
 app.use('/', statics)
 
-app.listen(3000, () => {
-  console.log(`Server start on port http://localhost:${port}`)
+app.listen(port, () => {
+  console.log(`Server start on port ${port}`)
   if (db.error) {
     console.error('DB connection error!')
     process.exit(1)

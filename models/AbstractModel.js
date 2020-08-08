@@ -1,4 +1,8 @@
 class AbstractModel {
+  constructor(pool) {
+    this.pool = pool
+  }
+
   async query(query) {
     try {
       const result = await this.pool.query(query)
@@ -10,6 +14,9 @@ class AbstractModel {
 
   logError(error) {
     console.log(error)
+    const sql = `INSERT INTO errors(error_message) VALUES ("${error}")`
+    console.log(sql)
+    this.query(sql)
   }
 
   async getLastId() {
