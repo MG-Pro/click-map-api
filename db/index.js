@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise.js'
+import mongoose from 'mongoose'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -15,7 +15,7 @@ if (fs.existsSync(configPath)) {
 
 if (!config) {
   const {DB_HOST, DB_USER, DB_NAME, DB_PASS} = process.env
-  
+
   if (DB_HOST && DB_USER && DB_NAME && DB_PASS) {
     config = {
       host: DB_HOST,
@@ -26,14 +26,20 @@ if (!config) {
   }
 }
 
-const db = {error: true}
-
-if (config) {
-  db.pool = mysql.createPool({
-    connectionLimit: 5,
-    ...config,
-  })
-  db.error = false
+async function dbConnect() {
+  const dbUrl = `mongodb://${config.host}:27017/${config.database}`
+  try {
+    await mongoose.connect(dbUrl, {
+      user: config.user,
+      pass: config.password,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    console.log('DB connected')
+  } catch (e) {
+    console.error('DB connection error!', e)
+    process.exit(1)
+  }
 }
 
-export default db
+export default dbConnect

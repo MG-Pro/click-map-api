@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import activities from './routes/activities.js'
 import users from './routes/users.js'
 import statics from './routes/static.js'
-import db from './db/index.js'
+import dbConnect from './db/index.js'
 import errorHandler from './middlewares/errorHandler.js'
 
 const app = express()
@@ -28,8 +28,5 @@ app.use(errorHandler)
 
 app.listen(port, () => {
   console.log(`Server start on port ${port}`)
-  if (db.error) {
-    console.error('DB connection error!')
-    process.exit(1)
-  }
+  dbConnect()
 })
