@@ -13,6 +13,12 @@ class UserModel extends AbstractModel {
     await this.query(sqlInsert)
     return this.getLastId()
   }
+
+  async getList() {
+    const sqlSelect = 'SELECT * FROM users u INNER JOIN activities a ON u.id = a.user_id GROUP BY a.user_id'
+    const result = await this.query(sqlSelect)
+    return result
+  }
 }
 
 export default new UserModel(db.pool)
