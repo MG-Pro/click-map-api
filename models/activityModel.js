@@ -1,5 +1,6 @@
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
+import orientationModel from './orientationModel.js'
 
 class ActivityModel extends AbstractModel {
   async add(userId, activities) {
@@ -10,13 +11,28 @@ class ActivityModel extends AbstractModel {
     for (const item of preparedActivitiesData) {
       const value = `${userId}, ${this.normalizeValues(item)}`
       const sqlInsert = `INSERT INTO activities (user_id, ${sqlKeys}) VALUES (${value})`
-      console.log(sqlInsert)
       await this.query(sqlInsert)
       const newActivityId = await this.getLastId()
       await this.addDomElements(newActivityId, targetElemData, nearestElemsData)
     }
 
     return true
+  }
+
+  async getByUserId(userId) {
+    const sqlSelect = `
+        SELECT * FROM activities WHERE user_id=${userId}
+        `
+    const activities = await this.query(sqlSelect) || []
+
+    if (!activities.length) {
+      return activities
+    }
+
+    for (const activity of activities) {
+      activity.orientation = orientationModel.getOrientationValue(activity.orientation_id)
+    }
+    return activities
   }
 
   createPreparedActivities(activities) {
@@ -33,7 +49,7 @@ class ActivityModel extends AbstractModel {
       } = item
 
       return {
-        orientation_id: this.getOrientationId(orientation),
+        orientation_id: orientationModel.getOrientationId(orientation),
         screen_width,
         click_x,
         click_y,
@@ -71,14 +87,6 @@ class ActivityModel extends AbstractModel {
 
     const sqlInsert = `INSERT INTO elements (${sqlKeys}) VALUES ${values}`
     await this.query(sqlInsert)
-  }
-
-  getOrientationId(orientation) {
-    const orientations = {
-      'landscape-primary': 1,
-      'portrait-primary': 2,
-    }
-    return orientations[orientation]
   }
 
   async getTags() {

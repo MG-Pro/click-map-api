@@ -15,9 +15,13 @@ class UserModel extends AbstractModel {
   }
 
   async getList() {
-    const sqlSelect = 'SELECT * FROM users u INNER JOIN activities a ON u.id = a.user_id GROUP BY a.user_id'
-    const result = await this.query(sqlSelect)
-    return result
+    const sqlSelect = `
+        SELECT u.id, COUNT(a.user_id) as activities 
+        FROM users u
+        INNER JOIN activities a on u.id = a.user_id
+        GROUP BY u.id`
+
+    return await this.query(sqlSelect)
   }
 }
 

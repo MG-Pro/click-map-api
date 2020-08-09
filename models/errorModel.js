@@ -9,6 +9,9 @@ class ErrorModel extends AbstractModel {
     }
 
     console.log(directError)
+    if (process.env.NODE_ENV === 'development') {
+      return directError
+    }
 
     const sqlInsert = `
       INSERT INTO errors(error_message, type, env) 

@@ -42,4 +42,19 @@ router.post('/add', asyncHandler(async (req, res) => {
   }
 }))
 
+router.get('/by-user-id', asyncHandler(async (req, res) => {
+  const userId = req.query.id
+
+  if (!userId) {
+    throw new Error('User ID not transmitted')
+  }
+
+  const list = await activityModel.getByUserId(userId)
+
+  res.json({
+    success: true,
+    users: list,
+  })
+}))
+
 export default router
