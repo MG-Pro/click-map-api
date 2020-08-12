@@ -1,6 +1,7 @@
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 import orientationModel from './orientationModel.js'
+import elementsModel from './elementsModel.js'
 
 class ActivityModel extends AbstractModel {
   async add(userId, activities) {
@@ -13,7 +14,7 @@ class ActivityModel extends AbstractModel {
       const sqlInsert = `INSERT INTO activities (user_id, ${sqlKeys}) VALUES (${value})`
       await this.query(sqlInsert)
       const newActivityId = await this.getLastId()
-      await this.addDomElements(newActivityId, targetElemData, nearestElemsData)
+      await elementsModel.addDomElements(newActivityId, targetElemData, nearestElemsData)
     }
 
     return true
@@ -59,50 +60,6 @@ class ActivityModel extends AbstractModel {
         timestamp,
       }
     })
-  }
-
-  async addDomElements(activityId, target, nearest) {
-    target.target = 1
-    const tags = await this.getTags()
-    const elems = []
-    for (const item of nearest.concat(target)) {
-      const data = {
-        selector: item.selector,
-        x: item.elemX,
-        y: item.elemY,
-        width: item.width,
-        height: item.height,
-        tag_id: await this.getTagId(tags, item.elemTag),
-        activity_id: activityId,
-        target: item.target || 0,
-      }
-      elems.push(data)
-    }
-    const sqlKeys = Object.keys(elems[0]).join(', ')
-
-    const values = elems.reduce((acc, item, i, array) => {
-      acc += `(${this.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
-      return acc
-    }, '')
-
-    const sqlInsert = `INSERT INTO elements (${sqlKeys}) VALUES ${values}`
-    await this.query(sqlInsert)
-  }
-
-  async getTags() {
-    const sqlSelect = 'SELECT * FROM elem_tags'
-    return await this.query(sqlSelect)
-  }
-
-  async getTagId(tags, tagName) {
-    const tag = tags.find(({name}) => name === tagName)
-    return tag ? tag.id : await this.addTagName(tagName)
-  }
-
-  async addTagName(tagName) {
-    const sqlInsert = `INSERT INTO elem_tags(name) VALUES ("${tagName}")`
-    await this.query(sqlInsert)
-    return this.getLastId()
   }
 
   normalizeValues(values) {
