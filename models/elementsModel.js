@@ -2,7 +2,12 @@ import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 
 class ElementsModel extends AbstractModel {
-  async addDomElements(activityId, target, nearest) {
+  constructor(pool) {
+    super(pool)
+    this.tags = []
+  }
+
+  async add(activityId, target, nearest) {
     target.target = 1
     const tags = await this.getTags()
     const elems = []
@@ -13,7 +18,7 @@ class ElementsModel extends AbstractModel {
         y: item.elemY,
         width: item.width,
         height: item.height,
-        tag_id: await this.getTagId(tags, item.elemTag),
+        tag_id: await this.getTagIdByName(tags, item.elemTag),
         activity_id: activityId,
         target: item.target || 0,
       }
@@ -30,14 +35,28 @@ class ElementsModel extends AbstractModel {
     await this.query(sqlInsert)
   }
 
+  async getByActivityId(activityId) {
+    const sqlSelect = `SELECT * FROM elements WHERE activity_id=${activityId}`
+    return await this.query(sqlSelect)
+  }
+
   async getTags() {
+    if (this.tags.length) {
+      return this.tags
+    }
+
     const sqlSelect = 'SELECT * FROM elem_tags'
     return await this.query(sqlSelect)
   }
 
-  async getTagId(tags, tagName) {
+  async getTagIdByName(tags, tagName) {
     const tag = tags.find(({name}) => name === tagName)
     return tag ? tag.id : await this.addTagName(tagName)
+  }
+
+  async getTagNameById(tagId) {
+    const tags = await this.getTags()
+    return (tags.find((tag) => tag.id === tagId) || {}).name
   }
 
   async addTagName(tagName) {

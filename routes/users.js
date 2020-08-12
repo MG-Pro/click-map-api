@@ -9,7 +9,7 @@ router.get('/list', asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    users: list,
+    data: list,
   })
 }))
 
