@@ -13,6 +13,12 @@ class DataModel extends AbstractModel {
       throw {type: 'APP', error: new Error('Error encode data')}
     }
   }
+  
+  normalizeValues(values) {
+    return Object.values(values)
+      .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))
+      .join(', ')
+  }
 }
 
 export default new DataModel(db.pool)

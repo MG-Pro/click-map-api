@@ -2,28 +2,41 @@ import AbstractModel from './AbstractModel.js'
 import db from '../db/index.js'
 
 class OrientationModel extends AbstractModel {
-  constructor() {
-    super()
-    this.orientations = [
-      {
-        id: 1,
-        name: 'landscape-primary',
-      },
-      {
-        id: 2,
-        name: 'portrait-primary',
-      },
-    ]
+  constructor(pool) {
+    super(pool)
+    this.orientations = []
+  }
+  
+  async getOrientations() {
+    if (this.orientations.length) {
+      return this.orientations
+    }
+  
+    const sqlSelect = 'SELECT * FROM orientations'
+    this.orientations = await this.query(sqlSelect)
+    console.log(this.orientations)
+  }
+  
+  async getOrientationId(orientationName) {
+    await this.getOrientations()
+    const orientation = this.orientations.find(({name}) => orientationName === name)
+    if (orientation) {
+      return orientation.id
+    }
+    return await this.add(orientationName)
   }
 
-  getOrientationId(orientation) {
-    const object = this.orientations.find(({name}) => orientation === name)
-    return object.id
-  }
-
-  getOrientationValue(id) {
-    const object = this.orientations.find(({id: itemId}) => itemId === id)
+  async getOrientationValue(id) {
+    await this.getOrientations()
+    
+    const object = this.orientations.find(({id: itemId}) => itemId === id) || {}
     return object.name
+  }
+  
+  async add(orientationName) {
+    const sqlInsert = `INSERT INTO orientations(name) VALUES ("${orientationName}")`
+    await this.query(sqlInsert)
+    return this.getLastId()
   }
 }
 

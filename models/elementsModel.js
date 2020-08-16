@@ -1,5 +1,6 @@
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
+import dataModel from './dataModel.js'
 
 class ElementsModel extends AbstractModel {
   constructor(pool) {
@@ -27,7 +28,7 @@ class ElementsModel extends AbstractModel {
     const sqlKeys = Object.keys(elems[0]).join(', ')
 
     const values = elems.reduce((acc, item, i, array) => {
-      acc += `(${this.normalizeActivityValues(item)})${i + 1 === array.length ? '' : ', '}`
+      acc += `(${dataModel.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
       return acc
     }, '')
 

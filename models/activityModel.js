@@ -2,6 +2,7 @@ import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 import orientationModel from './orientationModel.js'
 import elementsModel from './elementsModel.js'
+import dataModel from './dataModel.js'
 
 class ActivityModel extends AbstractModel {
   async add(userId, activities) {
@@ -10,7 +11,7 @@ class ActivityModel extends AbstractModel {
     const {nearestElemsData, targetElemData} = activities[0]
 
     for (const item of preparedActivitiesData) {
-      const value = `${userId}, ${this.normalizeActivityValues(item)}`
+      const value = `${userId}, ${dataModel.normalizeValues(item)}`
       const sqlInsert = `INSERT INTO activities (user_id, ${sqlKeys}) VALUES (${value})`
       await this.query(sqlInsert)
       const newActivityId = await this.getLastId()
@@ -31,30 +32,31 @@ class ActivityModel extends AbstractModel {
     const list = []
 
     for (const activity of activities) {
-      activity.orientation = orientationModel.getOrientationValue(activity.orientation_id)
-      delete activity.orientation_id
+      activity.orientation = await orientationModel.getOrientationValue(activity.orientation_id)
       const elements = await elementsModel.getByActivityId(activity.id)
+      activity.success = false
       activity.nearest_elements = []
-
+      
       for (const element of elements) {
         element.tag = await elementsModel.getTagNameById(element.tag_id)
-        delete element.tag_id
-
+        
         if (element.target) {
-          delete element.target
-          delete element.activity_id
           activity.target_element = element
+          activity.success = this.isSuccessActivity(element)
         } else {
-          delete element.target
-          delete element.activity_id
           activity.nearest_elements.push(element)
         }
+      
+        delete element.tag_id
+        delete element.target
+        delete element.activity_id
       }
 
       const listItem = {
         user_id: +userId,
       }
       
+      delete activity.orientation_id
       delete activity.user_id
 
       const index = list.findIndex((item) => item.page_uri === activity.page_uri)
@@ -77,8 +79,21 @@ class ActivityModel extends AbstractModel {
     })
   }
 
-  createPreparedActivities(activities) {
-    return activities.map((item) => {
+  isSuccessActivity(targetElem) {
+    const successTags = [
+      'a',
+      'button',
+      'input',
+      'select',
+    ]
+    
+    return successTags.includes(targetElem.tag.toLowerCase())
+  }
+  
+  async createPreparedActivities(activities) {
+    const preparedActivities = []
+    
+    for (const item of activities) {
       const {
         click_x,
         click_y,
@@ -89,9 +104,9 @@ class ActivityModel extends AbstractModel {
         page_uri,
         timestamp,
       } = item
-
-      return {
-        orientation_id: orientationModel.getOrientationId(orientation),
+      
+      preparedActivities.push({
+        orientation_id: await orientationModel.getOrientationId(orientation),
         screen_width,
         click_x,
         click_y,
@@ -99,8 +114,10 @@ class ActivityModel extends AbstractModel {
         scroll_y,
         page_uri,
         timestamp,
-      }
-    })
+      })
+    }
+    
+    return preparedActivities
   }
 }
 
