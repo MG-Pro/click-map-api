@@ -27,7 +27,7 @@ class ElementsModel extends AbstractModel {
     const sqlKeys = Object.keys(elems[0]).join(', ')
 
     const values = elems.reduce((acc, item, i, array) => {
-      acc += `(${this.normalizeValues(item)})${i + 1 === array.length ? '' : ', '}`
+      acc += `(${this.normalizeActivityValues(item)})${i + 1 === array.length ? '' : ', '}`
       return acc
     }, '')
 

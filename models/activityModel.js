@@ -54,7 +54,7 @@ class ActivityModel extends AbstractModel {
       const listItem = {
         user_id: +userId,
       }
-
+      
       delete activity.user_id
 
       const index = list.findIndex((item) => item.page_uri === activity.page_uri)
@@ -62,6 +62,7 @@ class ActivityModel extends AbstractModel {
       if (index < 0) {
         Object.assign(listItem, {
           page_uri: activity.page_uri,
+          activities_count: 0,
           activities: [activity],
         })
         list.push(listItem)
@@ -70,7 +71,10 @@ class ActivityModel extends AbstractModel {
       }
     }
 
-    return list
+    return list.map((item) => {
+      item.activities_count = item.activities.length
+      return item
+    })
   }
 
   createPreparedActivities(activities) {
@@ -97,12 +101,6 @@ class ActivityModel extends AbstractModel {
         timestamp,
       }
     })
-  }
-
-  normalizeActivityValues(values) {
-    return Object.values(values)
-      .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))
-      .join(', ')
   }
 }
 
