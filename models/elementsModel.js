@@ -41,6 +41,12 @@ class ElementsModel extends AbstractModel {
     return await this.query(sqlSelect)
   }
 
+  async getCountByActivityId(activityId) {
+    const sqlSelect = `SELECT COUNT(elements.id) FROM elements WHERE activity_id=${activityId}`
+    const result = await this.query(sqlSelect)
+    return result[0]['COUNT(elements.id)']
+  }
+
   async getTags() {
     if (this.tags.length) {
       return this.tags
@@ -64,6 +70,18 @@ class ElementsModel extends AbstractModel {
     const sqlInsert = `INSERT INTO elem_tags(name) VALUES ("${tagName}")`
     await this.query(sqlInsert)
     return this.getLastId()
+  }
+
+  async removeByActivityId(activityId) {
+    const sqlDelete = `DELETE FROM elements WHERE activity_id=${activityId}`
+    await this.query(sqlDelete)
+  }
+
+  async autoRemove() {
+    const sqlDelete = `
+      DELETE FROM elements WHERE elements.activity_id NOT IN (SELECT activities.id FROM activities)`
+    const result = await this.query(sqlDelete)
+    return result.affectedRows
   }
 }
 

@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler'
 import userModel from '../models/userModel.js'
 import activityModel from '../models/activityModel.js'
 import dataModel from '../models/dataModel.js'
+import elementsModel from '../models/elementsModel.js'
 
 const router = express.Router()
 const sec = 'CE68C8072A0A71863350CFB1BED8349CAD41672E'
@@ -54,6 +55,23 @@ router.get('/by-user-id', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: list,
+  })
+}))
+
+router.get('/auto-clean', asyncHandler(async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    res.json({
+      success: false,
+      data: 'Only local method',
+    })
+  }
+
+  const deletedActivityCount = await activityModel.autoRemove()
+  const deletedElementsCount = await elementsModel.autoRemove()
+
+  res.json({
+    success: true,
+    data: `Deleted ${deletedActivityCount} activity(s), ${deletedElementsCount} element(s)`,
   })
 }))
 

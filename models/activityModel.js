@@ -119,6 +119,21 @@ class ActivityModel extends AbstractModel {
 
     return preparedActivities
   }
+
+  async autoRemove() {
+    const sqlDelete = `
+        DELETE FROM activities
+        WHERE activities.id
+        NOT IN (SELECT elements.activity_id FROM elements)`
+
+    const result = await this.query(sqlDelete)
+    return result.affectedRows
+  }
+
+  async removeById(activityId) {
+    const sqlDelete = `DELETE FROM activities WHERE id=${activityId}`
+    await this.query(sqlDelete)
+  }
 }
 
 export default new ActivityModel(db.pool)
