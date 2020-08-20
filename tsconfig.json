@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "outDir": "dist"
+  },
+  "lib": ["es2015"],
+  "exclude": [
+    "node_modules",
+    ".idea",
+    ".eslintrc.cjs"
+  ]
+}
