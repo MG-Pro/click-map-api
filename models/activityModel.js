@@ -6,7 +6,7 @@ import dataModel from './dataModel.js'
 
 class ActivityModel extends AbstractModel {
   async add(userId, activities) {
-    const preparedActivitiesData = this.createPreparedActivities(activities)
+    const preparedActivitiesData = await this.createPreparedActivities(activities)
     const sqlKeys = Object.keys(preparedActivitiesData[0]).join(', ')
     const {nearestElemsData, targetElemData} = activities[0]
 
@@ -36,17 +36,17 @@ class ActivityModel extends AbstractModel {
       const elements = await elementsModel.getByActivityId(activity.id)
       activity.success = false
       activity.nearest_elements = []
-      
+
       for (const element of elements) {
         element.tag = await elementsModel.getTagNameById(element.tag_id)
-        
+
         if (element.target) {
           activity.target_element = element
           activity.success = this.isSuccessActivity(element)
         } else {
           activity.nearest_elements.push(element)
         }
-      
+
         delete element.tag_id
         delete element.target
         delete element.activity_id
@@ -55,7 +55,7 @@ class ActivityModel extends AbstractModel {
       const listItem = {
         user_id: +userId,
       }
-      
+
       delete activity.orientation_id
       delete activity.user_id
 
@@ -86,13 +86,13 @@ class ActivityModel extends AbstractModel {
       'input',
       'select',
     ]
-    
+
     return successTags.includes(targetElem.tag.toLowerCase())
   }
-  
+
   async createPreparedActivities(activities) {
     const preparedActivities = []
-    
+
     for (const item of activities) {
       const {
         click_x,
@@ -104,7 +104,7 @@ class ActivityModel extends AbstractModel {
         page_uri,
         timestamp,
       } = item
-      
+
       preparedActivities.push({
         orientation_id: await orientationModel.getOrientationId(orientation),
         screen_width,
@@ -116,7 +116,7 @@ class ActivityModel extends AbstractModel {
         timestamp,
       })
     }
-    
+
     return preparedActivities
   }
 }
