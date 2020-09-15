@@ -75,4 +75,13 @@ router.get('/auto-clean', asyncHandler(async (req, res) => {
   })
 }))
 
+router.get('/all-by-uri', asyncHandler(async (req, res) => {
+  const list = await elementsModel.getAllByUri()
+
+  res.json({
+    success: true,
+    data: list,
+  })
+}))
+
 export default router

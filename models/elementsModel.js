@@ -41,6 +41,21 @@ class ElementsModel extends AbstractModel {
     return await this.query(sqlSelect)
   }
 
+  async getAllByUri() {
+    const sqlSelect = 'SELECT * FROM activities'
+    const activities = await this.query(sqlSelect)
+
+    return activities.reduce((acc, item) => {
+      if (!acc[item.page_uri]) {
+        acc[item.page_uri] = [item]
+      } else {
+        acc[item.page_uri].push(item)
+      }
+      delete item.page_uri
+      return acc
+    }, {})
+  }
+
   async getCountByActivityId(activityId) {
     const sqlSelect = `SELECT COUNT(elements.id) FROM elements WHERE activity_id=${activityId}`
     const result = await this.query(sqlSelect)
