@@ -76,7 +76,13 @@ router.get('/auto-clean', asyncHandler(async (req, res) => {
 }))
 
 router.get('/all-by-uri', asyncHandler(async (req, res) => {
-  const list = await elementsModel.getAllByUri()
+  const {uri} = req.query
+
+  if (!uri) {
+    throw new Error('Uri not transmitted')
+  }
+
+  const list = await elementsModel.getAllByUri(uri)
 
   res.json({
     success: true,

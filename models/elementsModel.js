@@ -41,15 +41,44 @@ class ElementsModel extends AbstractModel {
     return await this.query(sqlSelect)
   }
 
-  async getAllByUri() {
-    const sqlSelect = 'SELECT * FROM activities'
-    const activities = await this.query(sqlSelect)
+  async getAllByUri(uri) {
+    const sqlSelect = `
+        SELECT e.id       as element_id,
+               e.selector as css_selector,
+               et.name    as tag_name,
+               e.target   as is_target,
+               e.visible  as is_visible,
+               e.x        as element_x,
+               e.y        as element_y,
+               e.width    as element_width,
+               e.height   as element_height,
+               a.screen_width,
+               o.name     as orientation,
+               a.id as activity_id,
+               a.click_x,
+               a.click_y,
+               a.scroll_x,
+               a.scroll_y,
+               a.page_uri,
+               a.timestamp
+        FROM elements e
+               INNER JOIN activities a ON e.activity_id = a.id 
+                    AND a.page_uri = '${uri}'
+               INNER JOIN elem_tags et ON e.tag_id = et.id
+               INNER JOIN orientations o ON a.orientation_id = o.id`
 
-    return activities.reduce((acc, item) => {
+    const elements = await this.query(sqlSelect)
+
+    return elements.reduce((acc, item) => {
       if (!acc[item.page_uri]) {
-        acc[item.page_uri] = [item]
+        acc[item.page_uri] = {
+          elements_count: 1,
+          activities_count: 1,
+          elements: [item],
+        }
       } else {
-        acc[item.page_uri].push(item)
+        acc[item.page_uri].elements_count++
+        acc[item.page_uri].elements.push(item)
       }
       delete item.page_uri
       return acc
@@ -94,7 +123,9 @@ class ElementsModel extends AbstractModel {
 
   async autoRemove() {
     const sqlDelete = `
-      DELETE FROM elements WHERE elements.activity_id NOT IN (SELECT activities.id FROM activities)`
+        DELETE
+        FROM elements
+        WHERE elements.activity_id NOT IN (SELECT activities.id FROM activities)`
     const result = await this.query(sqlDelete)
     return result.affectedRows
   }
