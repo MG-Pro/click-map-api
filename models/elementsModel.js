@@ -60,12 +60,14 @@ class ElementsModel extends AbstractModel {
                a.scroll_x,
                a.scroll_y,
                a.page_uri,
+               u.fingerprint as user_fingerprint,
                a.timestamp
         FROM elements e
                INNER JOIN activities a ON e.activity_id = a.id 
                     AND a.page_uri = '${uri}'
                INNER JOIN elem_tags et ON e.tag_id = et.id
-               INNER JOIN orientations o ON a.orientation_id = o.id`
+               INNER JOIN orientations o ON a.orientation_id = o.id
+               INNER JOIN users u ON a.user_id = u.id`
 
     const elements = await this.query(sqlSelect)
 
@@ -81,8 +83,20 @@ class ElementsModel extends AbstractModel {
         acc[item.page_uri].elements.push(item)
       }
       delete item.page_uri
+      item.is_success = this.isSuccess(item)
       return acc
     }, {})
+  }
+
+  isSuccess(element) {
+    const successTags = [
+      'button',
+      'a',
+      'input',
+      'select',
+    ]
+
+    return element.is_target && successTags.includes(element.tag_name.toLowerCase()) ? 1 : 0
   }
 
   async getCountByActivityId(activityId) {
