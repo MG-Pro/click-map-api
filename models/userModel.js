@@ -2,8 +2,8 @@ import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 
 class UserModel extends AbstractModel {
-  async getByFingerprint(fingerprint) {
-    const sqlSelect = `SELECT * FROM users WHERE fingerprint="${fingerprint}"`
+  async getByVisitorId(fingerprint) {
+    const sqlSelect = `SELECT * FROM users WHERE visitorId="${fingerprint}"`
     const result = await this.query(sqlSelect)
     return result[0]
   }
@@ -16,7 +16,7 @@ class UserModel extends AbstractModel {
 
   async getList() {
     const sqlSelect = `
-        SELECT u.id, COUNT(a.user_id), u.create_date as activities
+        SELECT u.id, COUNT(a.visitor_id), u.create_date as activities
         FROM users u
         INNER JOIN activities a on u.id = a.user_id
         GROUP BY u.id`

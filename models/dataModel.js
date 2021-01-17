@@ -13,11 +13,24 @@ class DataModel extends AbstractModel {
       throw {type: 'APP', error: new Error('Error encode data')}
     }
   }
-  
+
   normalizeValues(values) {
     return Object.values(values)
       .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))
       .join(', ')
+  }
+
+  createDataObject(data) {
+    return {
+      visitorId: data[0],
+      screenWidth: data[1],
+      orientation: data[2],
+      timeStamp: data[3],
+      lang: data[4],
+      platform: data[5],
+      userAgent: data[6],
+      pageUri: data[7],
+    }
   }
 }
 
