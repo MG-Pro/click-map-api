@@ -21,15 +21,23 @@ class DataModel extends AbstractModel {
   }
 
   createDataObject(data) {
-    return {
-      visitorId: data[0],
-      screenWidth: data[1],
-      orientation: data[2],
-      timeStamp: data[3],
-      lang: data[4],
-      platform: data[5],
-      userAgent: data[6],
-      pageUri: data[7],
+    try {
+      const {visitorId, token, items} = JSON.parse(data)
+      return {
+        visitorId,
+        token,
+        transitions: items.map((item) => ({
+          screenWidth: item[0],
+          orientation: item[1],
+          timeStamp: item[2],
+          lang: item[3],
+          platform: item[4],
+          userAgent: item[5],
+          pageUri: item[6],
+        })),
+      }
+    } catch (e) {
+      throw {type: 'APP', error: new Error('Error create data object from request body')}
     }
   }
 }

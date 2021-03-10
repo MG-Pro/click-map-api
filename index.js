@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import activities from './routes/activities.js'
+import transitions from './routes/transitions.js'
 import users from './routes/users.js'
 import statics from './routes/static.js'
 import db from './db/index.js'
@@ -20,8 +20,9 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+app.use(bodyParser.text())
 
-app.use('/api/activities', activities)
+app.use('/api/transitions', transitions)
 app.use('/api/users', users)
 app.use('/', statics)
 app.use(errorHandler)

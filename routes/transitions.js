@@ -8,12 +8,12 @@ const router = express.Router()
 const sec = 'CE68C8072A0A71863350CFB1BED8349CAD41672E'
 
 router.post('/add', asyncHandler(async (req, res) => {
-  if (!req.body.data) {
+  if (!req.body) {
     throw new Error('There isn`t data field in request')
   }
 
-  const encodedData = dataModel.encodeData(req.body.data)
-  const {visitorId, transitions, token} = dataModel.createDataObject(encodedData)
+  // const encodedData = dataModel.encodeData(req.body)
+  const {visitorId, transitions, token} = dataModel.createDataObject(req.body)
 
   if (token !== sec) {
     throw new Error('Basic token not valid')
@@ -24,7 +24,7 @@ router.post('/add', asyncHandler(async (req, res) => {
   }
 
   if (!transitions.length) {
-    throw new Error('There isn`t any activities in request')
+    throw new Error('There isn`t any transitions in request')
   }
 
   let visitor = await userModel.getByVisitorId(visitorId)
@@ -33,6 +33,7 @@ router.post('/add', asyncHandler(async (req, res) => {
     const userId = await userModel.add(visitorId)
     visitor = {id: userId}
   }
+  return res.json({success: true})
 
   const result = !!await transitionModel.add(visitor.id, transitions)
 

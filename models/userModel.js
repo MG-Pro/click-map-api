@@ -2,24 +2,25 @@ import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 
 class UserModel extends AbstractModel {
-  async getByVisitorId(fingerprint) {
-    const sqlSelect = `SELECT * FROM users WHERE visitorId="${fingerprint}"`
+  async getByVisitorId(visitorId) {
+    const sqlSelect = `SELECT * FROM visitors WHERE visitor_id="${visitorId}"`
     const result = await this.query(sqlSelect)
     return result[0]
   }
 
-  async add(fingerprint) {
-    const sqlInsert = `INSERT INTO users(fingerprint) VALUES ("${fingerprint}")`
+  async add(visitorId) {
+    const sqlInsert = `INSERT INTO visitors(visitor_id) VALUES ("${visitorId}")`
+    console.log(sqlInsert, visitorId.length)
     await this.query(sqlInsert)
     return this.getLastId()
   }
 
   async getList() {
     const sqlSelect = `
-        SELECT u.id, COUNT(a.visitor_id), u.create_date as activities
-        FROM users u
-        INNER JOIN activities a on u.id = a.user_id
-        GROUP BY u.id`
+        SELECT v.id, COUNT(a.visitor_id), v.create_date AS transitions
+        FROM visitors v
+        INNER JOIN transitions a ON v.id = a.visitor_id
+        GROUP BY v.id`
 
     return await this.query(sqlSelect)
   }

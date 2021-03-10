@@ -20,7 +20,7 @@ class ErrorModel extends AbstractModel {
               "${directError.type}", 
               "${process.env.NODE_ENV}"
               )`
-    this.query(sqlInsert)
+    // this.query(sqlInsert)
     return directError
   }
 }
