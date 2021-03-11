@@ -3,13 +3,14 @@ dependencies:
   express: 4.17.1
   express-async-handler: 1.1.4
   mysql2: 2.1.0
+  ua-parser-js: 0.7.24
 devDependencies:
   cross-env: 7.0.2
   eslint: 7.4.0
   eslint-config-airbnb-base: 14.2.0_c68bb5016e109f58285db45d8cc55073
   eslint-plugin-import: 2.22.0_eslint@7.4.0
   nodemon: 2.0.4
-lockfileVersion: 5.1
+lockfileVersion: 5.2
 packages:
   /@babel/code-frame/7.10.4:
     dependencies:
@@ -2197,6 +2198,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
+  /ua-parser-js/0.7.24:
+    dev: false
+    resolution:
+      integrity: sha512-yo+miGzQx5gakzVK3QFfN0/L9uVhosXBBO7qmnk7c2iw1IhL212wfA3zbnI54B0obGwC/5NWub/iT9sReMx+Fw==
   /undefsafe/2.0.3:
     dependencies:
       debug: 2.6.9
@@ -2342,3 +2347,4 @@ specifiers:
   express-async-handler: ^1.1.4
   mysql2: 2.1.0
   nodemon: ^2.0.4
+  ua-parser-js: ^0.7.24

@@ -12,8 +12,9 @@ router.post('/add', asyncHandler(async (req, res) => {
     throw new Error('There isn`t data field in request')
   }
 
-  // const encodedData = dataModel.encodeData(req.body)
-  const {visitorId, transitions, token} = dataModel.createDataObject(req.body)
+  const encodedData = dataModel.encodeData(req.body)
+  console.log(encodedData)
+  const {visitorId, transitions, token} = dataModel.createDataObject(encodedData)
 
   if (token !== sec) {
     throw new Error('Basic token not valid')
@@ -33,14 +34,13 @@ router.post('/add', asyncHandler(async (req, res) => {
     const userId = await userModel.add(visitorId)
     visitor = {id: userId}
   }
-  return res.json({success: true})
 
-  const result = !!await transitionModel.add(visitor.id, transitions)
+  const result = !!await transitionModel.add(visitor.id, transitions, req.ip)
 
   if (result) {
     res.json({success: true})
   } else {
-    throw new Error('Activities was not save')
+    throw new Error('Transitions was not save')
   }
 }))
 

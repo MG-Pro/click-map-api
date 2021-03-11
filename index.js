@@ -9,6 +9,8 @@ import errorHandler from './middlewares/errorHandler.js'
 const app = express()
 const port = 3000
 
+app.set('trust proxy', true)
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
@@ -25,6 +27,7 @@ app.use(bodyParser.text())
 app.use('/api/transitions', transitions)
 app.use('/api/users', users)
 app.use('/', statics)
+
 app.use(errorHandler)
 
 app.listen(port, () => {

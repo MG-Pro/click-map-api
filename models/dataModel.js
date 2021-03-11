@@ -1,7 +1,17 @@
+import userAgentParser from 'ua-parser-js'
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 
 class DataModel extends AbstractModel {
+  get orientationMap() {
+    return {
+      'landscape-primary': 0,
+      'portrait-primary': 1,
+      'landscape-secondary': 2,
+      'portrait-secondary': 3,
+    }
+  }
+
   encodeData(encodedData) {
     try {
       const decodedData = encodedData.split('').reduce((acc, sym) => {
@@ -29,16 +39,25 @@ class DataModel extends AbstractModel {
         transitions: items.map((item) => ({
           screenWidth: item[0],
           orientation: item[1],
-          timeStamp: item[2],
+          timestamp: item[2],
           lang: item[3],
           platform: item[4],
           userAgent: item[5],
           pageUri: item[6],
+          cpuCores: item[7],
         })),
       }
     } catch (e) {
       throw {type: 'APP', error: new Error('Error create data object from request body')}
     }
+  }
+
+  splitUrl(pageUri) {
+    return new URL(pageUri)
+  }
+
+  getBrowserInfo(ua) {
+    return userAgentParser(ua)
   }
 }
 
