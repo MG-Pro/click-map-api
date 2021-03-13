@@ -3,12 +3,12 @@ class AbstractModel {
     this.pool = pool
   }
 
-  async query(query) {
+  async query(query, dev) {
     try {
       const result = await this.pool.query(query)
       return result[0]
     } catch (error) {
-      throw {type: 'SQL', error}
+      throw {type: 'SQL', dev, error}
     }
   }
 

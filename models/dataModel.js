@@ -12,35 +12,42 @@ class DataModel extends AbstractModel {
     }
   }
 
-  encodeData(encodedData) {
+  get protocolMap() {
+    return {
+      'http:': 0,
+      'https:': 1,
+    }
+  }
+
+  decodeData(encodedData) {
     try {
       const decodedData = encodedData.split('').reduce((acc, sym) => {
         acc += String.fromCharCode(sym.charCodeAt(0) ^ 123)
         return acc
       })
-      return JSON.parse(decodedData || {})
+      return JSON.parse(decodedData ?? {})
     } catch (e) {
       throw {type: 'APP', error: new Error('Error encode data')}
     }
   }
 
-  normalizeValues(values) {
+  stringifyValues(values) {
     return Object.values(values)
       .map((item) => (typeof item === 'string' ? `'${item}'` : Math.round(item)))
       .join(', ')
   }
 
-  createDataObject(data) {
+  createDataObject({visitorId, token, items, dev}) {
     try {
-      const {visitorId, token, items} = JSON.parse(data)
       return {
         visitorId,
         token,
+        dev: dev ? 1 : 0,
         transitions: items.map((item) => ({
           screenWidth: item[0],
           orientation: item[1],
           timestamp: item[2],
-          lang: item[3],
+          lang: item[3].slice(0, 2),
           platform: item[4],
           userAgent: item[5],
           pageUri: item[6],

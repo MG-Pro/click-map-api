@@ -3,17 +3,20 @@ import AbstractModel from './AbstractModel.js'
 import dataModel from './dataModel.js'
 
 class TransitionModel extends AbstractModel {
-  async add(visitorId, transitions, ip) {
-    const preparedTransitionsData = await this.createPreparedTransitions(transitions)
-    const sqlKeys = Object.keys(preparedTransitionsData[0]).join(', ')
-
-    for (const item of preparedTransitionsData) {
-      const value = `${visitorId}, ${dataModel.normalizeValues(item)}`
-      const sqlInsert = `INSERT INTO transitions (visitor_id, ${sqlKeys}, ip) VALUES (${value}, ${ip})`
-      console.log(sqlInsert)
-      // await this.query(sqlInsert)
+  async add(visitorId, transitions, ip, dev) {
+    let values = ''
+    let sqlKeys
+    for (const item of transitions) {
+      const preparedTransitionData = this.prepareTransition(item)
+      sqlKeys = sqlKeys
+        ?? `(visitor_id, ${Object.keys(preparedTransitionData).join(', ')}, ip, dev)`
+      values += `(${visitorId}, ${dataModel.stringifyValues(preparedTransitionData)}, '${ip}', ${dev}), `
     }
 
+    const sqlInsert = `INSERT INTO transitions${sqlKeys} VALUES ${values}`
+      .trim().replace(/,\s*$/, '')
+
+    await this.query(sqlInsert, dev)
     return true
   }
 
@@ -55,48 +58,41 @@ class TransitionModel extends AbstractModel {
     })
   }
 
-  async createPreparedTransitions(transitions) {
-    const preparedTransitions = []
+  prepareTransition(transition) {
+    const {
+      screenWidth,
+      orientation,
+      timestamp,
+      lang,
+      platform,
+      userAgent,
+      pageUri,
+      cpuCores,
+    } = transition
 
-    for (const item of transitions) {
-      const {
-        screenWidth,
-        orientation,
-        timestamp,
-        lang,
-        platform,
-        userAgent,
-        pageUri,
-        cpuCores,
-      } = item
+    const {protocol, hostname, port, search, pathname} = dataModel.splitUrl(pageUri)
+    const {browser, engine, os, cpu} = dataModel.getBrowserInfo(userAgent)
 
-      const {protocol, hostname, port, search, pathname} = dataModel.splitUrl(pageUri)
-      const {browser, engine, os, cpu} = dataModel.getBrowserInfo(userAgent)
-
-      preparedTransitions.push({
-        orientation: dataModel.orientationMap[orientation],
-        screen_width: screenWidth,
-        page_uri: pageUri,
-        user_agent: userAgent,
-        timestamp,
-        lang,
-        platform,
-        protocol,
-        hostname,
-        port,
-        search_params: search,
-        pathname,
-        browser_ver: browser.version,
-        browser_name: browser.name,
-        browser_engine: engine.name,
-        os_name: os.name,
-        os_ver: os.version,
-        cpu_arch: cpu.architecture,
-        cpu_cores: cpuCores,
-      })
+    return {
+      timestamp,
+      url: pageUri,
+      protocol: dataModel.protocolMap[protocol] ?? -1,
+      hostname,
+      pathname,
+      port,
+      search_params: search,
+      screen_width: screenWidth,
+      language: lang,
+      orientation: dataModel.orientationMap[orientation] ?? -1,
+      browser_ver: browser.major ?? '',
+      browser_name: browser.name ?? '',
+      browser_engine: engine.name ?? '',
+      os_name: os.name ?? '',
+      os_ver: os.version ?? '',
+      cpu_arch: cpu.architecture ?? '',
+      cpu_cores: cpuCores,
+      platform,
     }
-
-    return preparedTransitions
   }
 }
 

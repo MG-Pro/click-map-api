@@ -8,8 +8,8 @@ class ErrorModel extends AbstractModel {
       type: 'APP',
     }
 
-    console.log(directError)
-    if (process.env.NODE_ENV === 'development') {
+    console.error(directError)
+    if (process.env.NODE_ENV === 'development' || error.dev === 1) {
       return directError
     }
 
@@ -20,7 +20,7 @@ class ErrorModel extends AbstractModel {
               "${directError.type}", 
               "${process.env.NODE_ENV}"
               )`
-    // this.query(sqlInsert)
+    this.query(sqlInsert)
     return directError
   }
 }
