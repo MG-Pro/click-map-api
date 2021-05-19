@@ -8,9 +8,16 @@ class TransitionModel extends AbstractModel {
     let sqlKeys
     for (const item of transitions) {
       const preparedTransitionData = this.prepareTransition(item)
+
+      let urlId = await this.getPageURL(preparedTransitionData.url)
+
+      if (!urlId) {
+        urlId = await this.savePageURL(preparedTransitionData.url)
+      }
+
       sqlKeys = sqlKeys
-        ?? `(visitor_id, ${Object.keys(preparedTransitionData).join(', ')}, ip, dev)`
-      values += `(${visitorId}, ${dataModel.stringifyValues(preparedTransitionData)}, '${ip}', ${dev}), `
+        ?? `(visitor_id, url_id, ${Object.keys(preparedTransitionData).join(', ')}, ip, dev)`
+      values += `(${visitorId}, ${urlId}, ${dataModel.stringifyValues(preparedTransitionData)}, '${ip}', ${dev}), `
     }
 
     const sqlInsert = `INSERT INTO transitions${sqlKeys} VALUES ${values}`
@@ -93,6 +100,23 @@ class TransitionModel extends AbstractModel {
       cpu_cores: cpuCores,
       platform,
     }
+  }
+
+  async getPageURL(url) {
+    const sqlSelect = `
+       SELECT *
+       FROM pages
+       WHERE url = "${url}"`
+    const result = await this.query(sqlSelect)
+    return result[0]?.id
+  }
+
+  async savePageURL(url) {
+    const sqlInsert = `
+        INSERT INTO pages(url)
+        VALUES ("${url}")`
+    await this.query(sqlInsert)
+    return this.getLastId()
   }
 }
 
