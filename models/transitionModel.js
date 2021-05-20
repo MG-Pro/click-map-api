@@ -1,13 +1,22 @@
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
 import dataModel from './dataModel.js'
+import config from '../config/analize.js'
 
 class TransitionModel extends AbstractModel {
   async add(visitorId, transitions, ip, dev) {
     let values = ''
     let sqlKeys
+    let counter = 0
+
     for (const item of transitions) {
       const preparedTransitionData = this.prepareTransition(item)
+
+      if (config.filterTrack && !preparedTransitionData.url.includes(config.host)) {
+        continue
+      }
+
+      counter++
 
       let urlId = await this.getPageURL(preparedTransitionData.url)
 
@@ -18,6 +27,10 @@ class TransitionModel extends AbstractModel {
       sqlKeys = sqlKeys
         ?? `(visitor_id, url_id, ${Object.keys(preparedTransitionData).join(', ')}, ip, dev)`
       values += `(${visitorId}, ${urlId}, ${dataModel.stringifyValues(preparedTransitionData)}, '${ip}', ${dev}), `
+    }
+
+    if (!counter) {
+      return false
     }
 
     const sqlInsert = `INSERT INTO transitions${sqlKeys} VALUES ${values}`
@@ -117,6 +130,25 @@ class TransitionModel extends AbstractModel {
         VALUES ("${url}")`
     await this.query(sqlInsert)
     return this.getLastId()
+  }
+
+  async updateUrls() {
+    const sqlSelect = 'SELECT url, url_id FROM transitions'
+    const transitions = await this.query(sqlSelect) || []
+    console.log(transitions.length)
+
+    for (const transition of transitions) {
+      if (!transition.url_id) {
+        let id = await this.getPageURL(transition.url)
+        if (!id) {
+          id = await this.savePageURL(transition.url)
+        }
+
+        const sqlInsert = `INSERT INTO transitions(url_id) VALUES (${id})`
+        console.log(sqlInsert)
+        await this.query(sqlInsert)
+      }
+    }
   }
 }
 

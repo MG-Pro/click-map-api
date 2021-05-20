@@ -16,6 +16,7 @@ module.exports = {
     semi: ['error', 'never'],
     quotes: [2, 'single', {avoidEscape: true}],
     'no-console': 'off',
+    'no-continue': 'off',
     'prefer-template': 'off',
     'consistent-return': 'off',
     'object-curly-spacing': ['error', 'never'],
