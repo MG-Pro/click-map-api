@@ -135,7 +135,6 @@ class TransitionModel extends AbstractModel {
   async updateUrls() {
     const sqlSelect = 'SELECT url, url_id FROM transitions'
     const transitions = await this.query(sqlSelect) || []
-    console.log(transitions.length)
 
     for (const transition of transitions) {
       if (!transition.url_id) {
@@ -145,7 +144,6 @@ class TransitionModel extends AbstractModel {
         }
 
         const sqlInsert = `INSERT INTO transitions(url_id) VALUES (${id})`
-        console.log(sqlInsert)
         await this.query(sqlInsert)
       }
     }
