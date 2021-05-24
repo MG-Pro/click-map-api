@@ -12,9 +12,9 @@ router.post('/add', asyncHandler(async (req, res) => {
     throw new Error('There isn`t data field in request')
   }
 
-  const encodedData = dataModel.decodeData(req.body)
+  // const encodedData = dataModel.decodeData(req.body)
 
-  const {visitorId, transitions, token, dev} = dataModel.createDataObject(encodedData)
+  const {visitorId, transitions, token, dev} = dataModel.createDataObject(req.body)
 
   if (token !== sec) {
     throw new Error('Basic token not valid')
@@ -56,6 +56,22 @@ router.get('/by-user-id', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: list,
+  })
+}))
+
+router.post('/url-up', asyncHandler(async (req, res) => {
+  await transitionModel.updateUrls()
+
+  res.json({
+    success: true,
+  })
+}))
+
+router.post('/clean-urls', asyncHandler(async (req, res) => {
+  await transitionModel.cleanTransitions()
+
+  res.json({
+    success: true,
   })
 }))
 

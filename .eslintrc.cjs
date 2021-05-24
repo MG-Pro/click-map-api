@@ -17,6 +17,7 @@ module.exports = {
     quotes: [2, 'single', {avoidEscape: true}],
     'no-console': 'off',
     'no-continue': 'off',
+    'arrow-body-style': 'off',
     'prefer-template': 'off',
     'consistent-return': 'off',
     'object-curly-spacing': ['error', 'never'],

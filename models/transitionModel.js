@@ -41,7 +41,9 @@ class TransitionModel extends AbstractModel {
   }
 
   async getByUserId(visitorId) {
-    const sqlSelect = `SELECT * FROM transitions WHERE visitor_id=${visitorId}`
+    const sqlSelect = `SELECT *
+                       FROM transitions
+                       WHERE visitor_id = ${visitorId}`
     const transitions = await this.query(sqlSelect) || []
 
     if (!transitions.length) {
@@ -117,9 +119,9 @@ class TransitionModel extends AbstractModel {
 
   async getPageURL(url) {
     const sqlSelect = `
-       SELECT *
-       FROM pages
-       WHERE url = "${url}"`
+        SELECT *
+        FROM pages
+        WHERE url = "${url}"`
     const result = await this.query(sqlSelect)
     return result[0]?.id
   }
@@ -132,10 +134,27 @@ class TransitionModel extends AbstractModel {
     return this.getLastId()
   }
 
-  async updateUrls() {
-    const sqlSelect = 'SELECT url, url_id FROM transitions'
+  async cleanUrls() {
+    const sqlSelect = 'SELECT * FROM pages'
+
+    const pages = await this.query(sqlSelect) || []
+
+    for (const page of pages) {
+      if (page.url.includes(config.host)) {
+        continue
+      }
+
+      const sqlDelete = `
+          DELETE
+          FROM pages
+          WHERE id = ${page.id}`
+      await this.query(sqlDelete)
+    }
+  }
+
+  async cleanTransitions() {
+    const sqlSelect = 'SELECT id, url, url_id FROM transitions'
     const transitions = await this.query(sqlSelect) || []
-    console.log(transitions.length)
 
     for (const transition of transitions) {
       if (!transition.url_id) {
@@ -144,9 +163,11 @@ class TransitionModel extends AbstractModel {
           id = await this.savePageURL(transition.url)
         }
 
-        const sqlInsert = `INSERT INTO transitions(url_id) VALUES (${id})`
-        console.log(sqlInsert)
-        await this.query(sqlInsert)
+        const sqlUpdate = `
+            UPDATE transitions
+            SET url_id = ${id}
+            WHERE id = ${transition.id}`
+        await this.query(sqlUpdate)
       }
     }
   }

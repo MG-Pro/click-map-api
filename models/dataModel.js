@@ -1,6 +1,7 @@
 import userAgentParser from 'ua-parser-js'
 import db from '../db/index.js'
 import AbstractModel from './AbstractModel.js'
+import config from '../config/analize.js'
 
 class DataModel extends AbstractModel {
   get orientationMap() {
@@ -65,6 +66,15 @@ class DataModel extends AbstractModel {
 
   getBrowserInfo(ua) {
     return userAgentParser(ua)
+  }
+
+  transitionReduceMap() {
+    return Object.entries(config.aliases).reduce((acc, [key, val]) => {
+      val.forEach((pattern) => {
+        acc[pattern] = key
+      })
+      return acc
+    }, {})
   }
 }
 
