@@ -24,6 +24,10 @@ class TransitionModel extends AbstractModel {
         urlId = await this.savePageURL(preparedTransitionData.url)
       }
 
+      if (!await this.getOsVersion(preparedTransitionData.os_ver)) {
+        await this.saveOsVersion(preparedTransitionData.os_ver)
+      }
+
       sqlKeys = sqlKeys
         ?? `(visitor_id, url_id, ${Object.keys(preparedTransitionData).join(', ')}, ip, dev)`
       values += `(${visitorId}, ${urlId}, ${dataModel.stringifyValues(preparedTransitionData)}, '${ip}', ${dev}), `
@@ -132,6 +136,34 @@ class TransitionModel extends AbstractModel {
         VALUES ("${url}")`
     await this.query(sqlInsert)
     return this.getLastId()
+  }
+
+  async getOsVersion(name) {
+    const sqlSelect = `
+        SELECT *
+        FROM os_versions
+        WHERE name = "${name}"`
+    const result = await this.query(sqlSelect)
+    return result[0]?.id
+  }
+
+  async saveOsVersion(name) {
+    const sqlInsert = `
+        INSERT INTO os_versions(name)
+        VALUES ("${name}")`
+    await this.query(sqlInsert)
+    return this.getLastId()
+  }
+
+  async updateOsVers() {
+    const sqlSelect = 'SELECT id, os_ver FROM transitions'
+    const transitions = await this.query(sqlSelect) || []
+    for (const transition of transitions) {
+      if (!await this.getOsVersion(transition.os_ver)) {
+        await this.saveOsVersion(transition.os_ver)
+      }
+    }
+    return true
   }
 
   async cleanUrls() {

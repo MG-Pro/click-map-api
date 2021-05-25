@@ -20,6 +20,80 @@ class DataModel extends AbstractModel {
     }
   }
 
+  langMap() {
+    return {
+      ru: 1,
+      en: 2,
+      fr: 3,
+      uk: 4,
+      es: 5,
+      ka: 6,
+      zh: 7,
+      it: 8,
+    }
+  }
+
+  osNameMap() {
+    return {
+      Windows: 1,
+      Android: 2,
+      iOS: 3,
+      'Mac OS': 4,
+      Linux: 5,
+      Ubuntu: 6,
+    }
+  }
+
+  platformMap() {
+    return {
+      Win32: 1,
+      'Linux armv8l': 2,
+      iPhone: 3,
+      'Linux aarch64': 4,
+      MacIntel: 5,
+      'Linux armv7l': 6,
+      'Linux x86_64': 7,
+      iPad: 8,
+      Android: 9,
+      'Linux i686': 10,
+      Windows: 11,
+      Win64: 12,
+      armv7I: 13,
+    }
+  }
+
+  browserNameMap() {
+    return {
+      Chrome: 1,
+      'Mobile Safari': 2,
+      Yandex: 3,
+      Opera: 4,
+      GSA: 5,
+      'Samsung Browser': 6,
+      'MIUI Browser': 7,
+      'Chrome WebView': 8,
+      Safari: 9,
+      Edge: 10,
+      Firefox: 11,
+      WebKit: 12,
+      'Chrome Headless': 13,
+      UCBrowser: 14,
+      'Android Browser': 15,
+      IE: 16,
+      'Opera Touch': 17,
+    }
+  }
+
+  async osVersionMap() {
+    const sqlSelect = 'SELECT * FROM os_versions'
+    const result = await this.query(sqlSelect)
+
+    return result.reduce((acc, item) => {
+      acc[item.name] = item.id
+      return acc
+    }, {})
+  }
+
   decodeData(encodedData) {
     try {
       const decodedData = encodedData.split('').reduce((acc, sym) => {

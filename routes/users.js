@@ -2,6 +2,7 @@ import express from 'express'
 import asyncHandler from 'express-async-handler'
 import Parser from 'objects-to-csv'
 import userModel from '../models/userModel.js'
+import transitionModel from '../models/transitionModel.js'
 
 const router = express.Router()
 
@@ -46,5 +47,13 @@ router.get('/all-session-csv', asyncHandler(async (req, res) => {
   res.header('Content-Type', 'text/csv')
   res.attachment('data.csv')
   res.send(csv)
+}))
+
+router.get('/os_up', asyncHandler(async (req, res) => {
+  await transitionModel.updateOsVers()
+
+  res.json({
+    success: true,
+  })
 }))
 export default router

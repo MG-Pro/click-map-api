@@ -34,7 +34,7 @@ class UserModel extends AbstractModel {
   }
 
   async getAllSessions(idType = false, stringifySessions = true) {
-    const sqlSelect = 'SELECT visitor_id, timestamp, url, url_id FROM transitions'
+    const sqlSelect = 'SELECT * FROM transitions'
     const transitions = await this.query(sqlSelect) || []
 
     let pages
@@ -93,15 +93,41 @@ class UserModel extends AbstractModel {
   async flatSections() {
     const visitors = await this.getAllSessions()
     // const reduceMap = dataModel.transitionReduceMap()
+    const osVerMap = await dataModel.osVersionMap()
+    const langMap = dataModel.langMap()
+    const osNameMap = dataModel.osNameMap()
+    const platformMap = dataModel.platformMap()
+    const browserNameMap = dataModel.browserNameMap()
 
+    let sessionCounter = 1
     const vs = visitors.reduce((acc, visitor) => {
       visitor.sessions.forEach((session) => {
         if (session.items.length > config.sessionMaxLength) {
           return acc
         }
 
+        const {
+          screen_width: screenWidth,
+          orientation,
+          cpu_cores: cpuCores,
+          os_ver,
+          os_name,
+          language,
+          platform,
+          browser_name,
+        } = session.items[0]
+
         const result = {
+          Id: sessionCounter,
           VisitorId: visitor.visitor_id,
+          ScreenWidth: screenWidth ?? 0,
+          ScreenOrient: orientation ?? 0,
+          OsName: osNameMap[os_name] ?? 0,
+          OsVersion: osVerMap[os_ver] ?? 0,
+          UserLang: langMap[language] ?? 0,
+          UserDevice: platformMap[platform] ?? 0,
+          UserBrowser: browserNameMap[browser_name] ?? 0,
+          CpuCores: cpuCores ?? 0,
           Class: session.targetIndex ? config.targetClassId : config.anotherClassId,
         }
 
@@ -111,6 +137,7 @@ class UserModel extends AbstractModel {
         })
 
         acc.push(result)
+        sessionCounter++
       })
 
       return acc
@@ -119,9 +146,9 @@ class UserModel extends AbstractModel {
     return this.fillEmptyTrans(vs)
   }
 
-  fillEmptyTrans(sessions, filler = null) {
+  fillEmptyTrans(sessions, filler = 0) {
     sessions.forEach((row) => {
-      const rowLength = Object.keys(row).length - 1
+      const rowLength = Object.keys(row).length - 11
       if (rowLength < config.sessionMaxLength) {
         const gap = config.sessionMaxLength - rowLength
         for (let i = 1; i <= gap; i++) {
