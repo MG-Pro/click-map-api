@@ -142,6 +142,40 @@ class DataModel extends AbstractModel {
     return userAgentParser(ua)
   }
 
+  async getPageURL(url) {
+    const sqlSelect = `
+        SELECT *
+        FROM pages
+        WHERE url = "${url}"`
+    const result = await this.query(sqlSelect)
+    return result[0]?.id
+  }
+
+  async savePageURL(url) {
+    const sqlInsert = `
+        INSERT INTO pages(url)
+        VALUES ("${url}")`
+    await this.query(sqlInsert)
+    return this.getLastId()
+  }
+
+  async getOsVersion(name) {
+    const sqlSelect = `
+        SELECT *
+        FROM os_versions
+        WHERE name = "${name}"`
+    const result = await this.query(sqlSelect)
+    return result[0]?.id
+  }
+
+  async saveOsVersion(name) {
+    const sqlInsert = `
+        INSERT INTO os_versions(name)
+        VALUES ("${name}")`
+    await this.query(sqlInsert)
+    return this.getLastId()
+  }
+
   transitionReduceMap() {
     return Object.entries(config.aliases).reduce((acc, [key, val]) => {
       val.forEach((pattern) => {

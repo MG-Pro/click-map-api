@@ -18,14 +18,14 @@ class TransitionModel extends AbstractModel {
 
       counter++
 
-      let urlId = await this.getPageURL(preparedTransitionData.url)
+      let urlId = await dataModel.getPageURL(preparedTransitionData.url)
 
       if (!urlId) {
-        urlId = await this.savePageURL(preparedTransitionData.url)
+        urlId = await dataModel.savePageURL(preparedTransitionData.url)
       }
 
-      if (!await this.getOsVersion(preparedTransitionData.os_ver)) {
-        await this.saveOsVersion(preparedTransitionData.os_ver)
+      if (!await dataModel.getOsVersion(preparedTransitionData.os_ver)) {
+        await dataModel.saveOsVersion(preparedTransitionData.os_ver)
       }
 
       sqlKeys = sqlKeys
@@ -119,40 +119,6 @@ class TransitionModel extends AbstractModel {
       cpu_cores: cpuCores,
       platform,
     }
-  }
-
-  async getPageURL(url) {
-    const sqlSelect = `
-        SELECT *
-        FROM pages
-        WHERE url = "${url}"`
-    const result = await this.query(sqlSelect)
-    return result[0]?.id
-  }
-
-  async savePageURL(url) {
-    const sqlInsert = `
-        INSERT INTO pages(url)
-        VALUES ("${url}")`
-    await this.query(sqlInsert)
-    return this.getLastId()
-  }
-
-  async getOsVersion(name) {
-    const sqlSelect = `
-        SELECT *
-        FROM os_versions
-        WHERE name = "${name}"`
-    const result = await this.query(sqlSelect)
-    return result[0]?.id
-  }
-
-  async saveOsVersion(name) {
-    const sqlInsert = `
-        INSERT INTO os_versions(name)
-        VALUES ("${name}")`
-    await this.query(sqlInsert)
-    return this.getLastId()
   }
 }
 
