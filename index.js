@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import transitions from './routes/transitions.js'
 import users from './routes/users.js'
 import statics from './routes/static.js'
+import services from './routes/services.js'
 import db from './db/index.js'
 import errorHandler from './middlewares/errorHandler.js'
 
@@ -26,6 +27,7 @@ app.use(bodyParser.text())
 
 app.use('/api/transitions', transitions)
 app.use('/api/users', users)
+app.use('/api/services', services)
 app.use('/', statics)
 
 app.use(errorHandler)

@@ -59,20 +59,4 @@ router.get('/by-user-id', asyncHandler(async (req, res) => {
   })
 }))
 
-router.post('/url-up', asyncHandler(async (req, res) => {
-  await transitionModel.updateUrls()
-
-  res.json({
-    success: true,
-  })
-}))
-
-router.post('/clean-urls', asyncHandler(async (req, res) => {
-  await transitionModel.cleanTransitions()
-
-  res.json({
-    success: true,
-  })
-}))
-
 export default router
