@@ -22,7 +22,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "mysql2": "2.1.0",
-    "ua-parser-js": "^0.7.24"
+    "ua-parser-js": "^0.7.33"
   },
   "type": "module",
   "engines": {
